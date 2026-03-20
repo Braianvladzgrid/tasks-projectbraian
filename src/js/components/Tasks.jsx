@@ -7,26 +7,46 @@ const crearUsuario = async () => {
     });
 };
 
-const obtenerDatos = async () => {
-    const res = await fetch("https://playground.4geeks.com/todo/users/braian123");
-    const data = await res.json();
-}
-
-useEffect(() => {
-    crearUsuario();
-    obtenerTareas();
-}, []);
 
 const Tasks = () => {
     const [tasks, setTasks] = useState([]);
     const [newTask, setNewTask] = useState("");
-    const addTask = () => {
-        setTasks([...tasks, newTask]);
-        setNewTask("");
+   
+   const addTask = async () => {
+    if (!newTask.trim()) return;
+
+    await fetch("https://playground.4geeks.com/todo/todos/braian123", {
+        method: "POST",
+        body: JSON.stringify({
+            label: newTask,
+            done: false
+        }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+
+    setNewTask("");
+    obtenerDatos(); // actualizar lista de tareas
+    
+};
+    const deleteTask = async (id) => {
+        await fetch(`https://playground.4geeks.com/todo/todos/${id}`, {
+            method: "DELETE"
+        });
+        obtenerDatos(); // actualizar lista de tareas
     };
-    const deleteTask = (index) => {
-        setTasks(tasks.filter((_, i) => i !== index));
+    const obtenerDatos = async () => {
+        const res = await fetch("https://playground.4geeks.com/todo/users/braian123");
+        const data = await res.json();
+        setTasks(data.todos);
     };
+
+    useEffect(() => {
+        crearUsuario();
+        obtenerDatos();
+
+    }, []);
 
     return (
         <>
@@ -53,8 +73,8 @@ const Tasks = () => {
                         : <ul className="list-unstyled mb-0">
                             {tasks.map((task, index) => (
                                 <li className="border-bottom d-flex justify-content-between px-3 py-3" key={index}>
-                                    <span className="h5 fw-light mb-0"> {task} </span>
-                                    <button className="delete-btn" onClick={() => deleteTask(index)}><i class="fa-solid fa-x text-danger"></i></button>
+                                    <span className="h5 fw-light mb-0"> {task.label} </span>
+                                    <button className="delete-btn" onClick={() => deleteTask(task.id)}><i className="fa-solid fa-x text-danger"></i></button>
                                 </li>
                             ))}
                         </ul>
