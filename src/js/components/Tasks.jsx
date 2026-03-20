@@ -1,6 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./style.css";
 
+const crearUsuario = async () => {
+    await fetch("https://playground.4geeks.com/todo/users/braian123", {
+        method: "POST"
+    });
+};
+
+const obtenerDatos = async () => {
+    const res = await fetch("https://playground.4geeks.com/todo/users/braian123");
+    const data = await res.json();
+}
+
+useEffect(() => {
+    crearUsuario();
+    obtenerTareas();
+}, []);
 
 const Tasks = () => {
     const [tasks, setTasks] = useState([]);
